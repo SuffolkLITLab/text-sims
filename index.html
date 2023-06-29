@@ -70,7 +70,7 @@
 		<p>
 			<input type="button" class="option_button" value='work an entire case' onclick="alert('coming soon')" disabled/>
 			<p style="text-align: center;">or focus on one thing</p>
-			<input id="first_client_meeting" type="button" class="option_button" value='first client meeting' onclick="edit_state('stage','first_client_meeting');passcheck();"/>
+			<input id="first_client_meeting" type="button" class="option_button" value='first client meeting' onclick="edit_state('task','first_client_meeting');passcheck();"/>
 			<input type="button" class="option_button" value='arrainment &amp; bail hearing' onclick="alert('coming soon')" disabled/>
 			<input type="button" class="option_button" value='motion to dismiss' onclick="alert('coming soon')" disabled/>
 			<input type="button" class="option_button" value='client interview' onclick="alert('coming soon')" disabled/>
@@ -122,13 +122,14 @@
 		YOU: 
 		</p>
 		<p>
-		Okay. 
+		Okay. FWIW, here's what your client had to say when asked how they thought the interview went. 
 		</p>
 		<p>
 		<i>
 			NOTE: If you want to revisit this case in the future, you should save it to a file using the link above. You could also consider <a href="javascript:void('')" onClick="">printing</a> the above. To run a new simulation, hit New above or load a senario using the Open link.
 		</i>
 		</p>
+		<p>We'd love your feedback, consider completing this <a href="https://forms.gle/zJeZRRNr1vKShM4S7" target="_blank">three question survey</a>.</p>
 	</div>
     
   </div>
@@ -172,18 +173,7 @@
 
 <script type="text/javascript">
 
-function show_do() {
-	$('#reply_box').hide();
-	$('#action_box').show();
-	$('#show_say_button').focus();
-	$("#action_list").scrollTop(0);
-}
 
-function show_say() {
-	$('#reply_box').show();
-	$('#action_box').hide();
-	$('#reply').focus();
-}
 
 //===========================================
 // START: data handling
@@ -287,12 +277,12 @@ function generategamestate() {
 		$('#live').append(`<div style="text-align:right;width:100%;">Case No. `+get_state('case_no')+`</div>
 		<h3>Arrignment +0 Days</h3>
 		<p>
-		It's Monday morning and you're in the `+get_state('court')["name"]+` in Massachusetts. You're today's duty attorney, meaning you will be picking up new cases as they come in for arrainments and bail arguments. The clerk has given you a folder containing the following documents, a <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=complaint&g=`+complaint_data+`','_blank');">criminal complaint</a>, <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=report&g=`+report_data+`','_blank');">police report</a>, and <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=cori&g=`+cori_data+`','_blank');">CORI</a>. They also let you know that the prosecutor is looking to hold your client. Your client is downstairs in lockup. Take a moment to review their documents, then head downstairs to meet them.
+		It's Monday morning and you're in the `+get_state('court')["name"]+` in Massachusetts. You're today's duty attorney, meaning you will be picking up new cases as they come in for arrainments and bail arguments. The clerk has given you a folder containing the following documents, a <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=complaint&g=`+complaint_data+`','_blank');">complaint</a>, <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=report&g=`+report_data+`','_blank');">incident report</a>, and <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=cori&g=`+cori_data+`','_blank');">CORI</a>. They also let you know that the prosecutor is looking to hold your client. Your client is downstairs in lockup. Take a moment to review their documents, then head downstairs to meet them.
 		</p>
 		<span id="visit_client_in_lockup">
 		<div class="options" style="display:show;box-sizing: border-box;max-width:300px;padding:0px 5px 0 5px;bottom:0px;margin: 15px auto;">
 		<p>
-			<input type="button" style="margin:0px 0 0 0px;width:100%;height:30px;background:rgb(187, 186, 186)" value='visit client in lockup' onclick="edit_state('stage','visit_client_in_lockup');passcheck();" tabindex="4"/>
+			<input type="button" style="margin:0px 0 0 0px;width:100%;height:30px;background:rgb(187, 186, 186)" value='visit client in lockup' onclick="passcheck();" tabindex="4"/>
 		</p>
 		</div>
 		</span>`);
@@ -300,6 +290,7 @@ function generategamestate() {
 		$('#input_panel').hide();
 		$('#loading_box').hide();
 		$('#reply_box').hide();
+		$('#action_box').hide();
 
 		localStorage.game_state = data;
 	  },
@@ -359,6 +350,7 @@ function bailinterview() {
 						$('#loading_box').hide();
 						$('#reply').val("");
 						$('#reply_box').show();
+						$('#action_box').hide();
 						$('#reply').focus();
 						localStorage.game_state = data;
 					}
@@ -408,6 +400,7 @@ function answer_button() {
 		$('#input_panel').show();
 		$('#loading_box').show();
 		$('#reply_box').hide();
+		$('#action_box').hide();
 		bailinterview(answer);
 	} else {
 		alert("Your answer is blank. Please add text.")
@@ -425,7 +418,8 @@ function load_state(clear=0){
 		localStorage.removeItem('game_state');
 	} 
 	
-	if (get_state("stage")=='first_client_meeting') {
+	if ((!get_state('client')) && (get_state('task'))) {
+
 		console.log("Loading case info");
 		$('#welcome').hide();
 		$('#pass_ask').hide();
@@ -436,6 +430,7 @@ function load_state(clear=0){
 		$('#input_panel').show();
 		$('#loading_box').show();
 		$('#reply_box').hide();
+		$('#action_box').hide();
 
 		$('#live').append(`<p>
 		<i>
@@ -445,7 +440,7 @@ function load_state(clear=0){
 
 		generategamestate();
 
-	} else if (get_state("stage")=='visit_client_in_lockup') {
+	} else if (get_state("task")=='first_client_meeting') {
 		console.log("Loading client interview");
 		$('#welcome').hide();
 		$('#pass_ask').hide();
@@ -456,14 +451,19 @@ function load_state(clear=0){
 		$('#input_panel').show();
 		$('#loading_box').show();
 		$('#reply_box').hide();
+		$('#action_box').hide();
 
-		$('#visit_client_in_lockup').remove();
-				$('#live').append(`<p>
-		<i>
-			NOTE: To speak with your client type your words below and hit Enter or Say. To hand them something or leave the room, hit Do and choose your desired action. Your goals are to: (1) get what you need to make a bail argument; (2) avoid talking about the facts of the case; and (3) to build a rapport with your client. You may want to review the duty day materials over on the <a href="https://suffolklitlab.org/incourt/" target="_blank">In Court app</a>.
-		</i>
-		</p>
-		<p>You enter lockup ask to see your client. The gaurd ... You reach the door and your client.</p>`);
+		if (JSON.parse(localStorage.game_state)["bail_interview_transcript"].length == 0) {
+
+			$('#visit_client_in_lockup').remove();
+			$('#live').append(`<p>
+			<i>
+				NOTE: To speak with your client type your words below and hit Enter or Say. To hand them something or leave the room, hit Do and choose your desired action. Your goals are to: (1) get what you need to make a bail argument; (2) avoid talking about the facts of the case; and (3) to build a rapport with your client. You may want to review the duty day materials over on the <a href="https://suffolklitlab.org/incourt/" target="_blank">In Court app</a>.
+			</i>
+			</p>
+			<p>You enter lockup ask to see your client. The gaurd ... You reach the door and your client.</p>`);
+
+		}
 
 		bailinterview();
 		
@@ -479,12 +479,12 @@ function load_state(clear=0){
 		$('#input_panel').hide();
 		$('#loading_box').hide();
 		$('#reply_box').hide();
+		$('#action_box').hide();
 	}
 		
 }
 
 function load_page() {
-	console.log("Checking verification");
 	start_spinner('loading_box');
 	$('#live').empty();
 	passcheck(login=-1);

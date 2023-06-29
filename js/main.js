@@ -140,6 +140,13 @@ function get_state(key) {
 function passcheck(login=0) {
 	var verified;
 
+    console.log("Checking verification")
+    $('#output_wrapper').css("bottom","165px");
+    $('#input_panel').show();
+    $('#loading_box').show();
+    $('#reply_box').hide();
+    $('#action_box').hide();
+
 	if (localStorage.passphrase) {
 		$('#suffolk_pass_phrase').val(localStorage.passphrase);
 	} else if (sessionStorage.passphrase) {
@@ -197,6 +204,12 @@ function passcheck(login=0) {
         alert("There was an error verifying your access.");
       }
     });
+
+    $('#output_wrapper').css("bottom","60px");
+    $('#input_panel').hide();
+    $('#loading_box').hide();
+    $('#reply_box').hide();
+    $('#action_box').hide();    
 }
 
 //===========================================
@@ -209,8 +222,21 @@ function logout() {
 	$('#suffolk_pass_phrase').val("");
     $("#suffolk_pass_phrase").css("background-color", "white");
 	$('#logout_span').hide();
-    console.log("Loging out")
+    console.log("Loging out");
 	load_state();
+}
+
+function show_do() {
+	$('#reply_box').hide();
+	$('#action_box').show();
+	$('#show_say_button').focus();
+	$("#action_list").scrollTop(0);
+}
+
+function show_say() {
+	$('#reply_box').show();
+	$('#action_box').hide();
+	$('#reply').focus();
 }
 
 // EOF
