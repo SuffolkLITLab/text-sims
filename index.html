@@ -37,7 +37,7 @@
   <div style="float:right">
   	<input id="upload" type="file"/> 
   	<a href="javascript:void('');" id="upload_link">Open</a>
-  	&nbsp;&nbsp;<a href="javascript:void('');" id="upload_link" onClick="saveTextAsFile(localStorage.game_state,'simulation.txt');">Save</a>
+  	&nbsp;&nbsp;<a href="javascript:void('');" id="upload_link" onClick="save_sim();">Save</a>
   	<span id="logout_span" style="display:none;">
 		&nbsp;&nbsp;<a href="javascript:void('');" onClick="load_state(1);">New</a>
   		&nbsp;&nbsp;<a href="javascript:void('');" onClick="logout();">Logout</a></span>
@@ -237,6 +237,8 @@ $('#reply').keypress(function(e){
 function generategamestate() {
 	var verified;
 
+	task = get_state('task');
+
 	if (localStorage.passphrase) {
 		$('#suffolk_pass_phrase').val(localStorage.passphrase);
 	} else if (sessionStorage.passphrase) {
@@ -274,18 +276,24 @@ function generategamestate() {
 		cori_data = encodeURIComponent(JSON.stringify(cori_data));
 
 		console.log("Game State: "+data);
-		$('#live').append(`<div style="text-align:right;width:100%;">Case No. `+get_state('case_no')+`</div>
-		<h3>Arrignment +0 Days</h3>
-		<p>
-		It's Monday morning and you're in the `+get_state('court')["name"]+` in Massachusetts. You're today's duty attorney, meaning you will be picking up new cases as they come in for arrainments and bail arguments. The clerk has given you a folder containing the following documents, a <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=complaint&g=`+complaint_data+`','_blank');">complaint</a>, <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=report&g=`+report_data+`','_blank');">incident report</a>, and <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=cori&g=`+cori_data+`','_blank');">CORI</a>. They also let you know that the prosecutor is looking to hold your client. Your client is downstairs in lockup. Take a moment to review their documents, then head downstairs to meet them.
-		</p>
-		<span id="visit_client_in_lockup">
-		<div class="options" style="display:show;box-sizing: border-box;max-width:300px;padding:0px 5px 0 5px;bottom:0px;margin: 15px auto;">
-		<p>
-			<input type="button" style="margin:0px 0 0 0px;width:100%;height:30px;background:rgb(187, 186, 186)" value='visit client in lockup' onclick="passcheck();" tabindex="4"/>
-		</p>
-		</div>
-		</span>`);
+
+		if (task=='first_client_meeting') {
+			$('#live').append(`<div style="text-align:right;width:100%;">Case No. `+get_state('case_no')+`</div>
+			<h3>Arrignment +0 Days</h3>
+			<p>
+			It's Monday morning and you're in the `+get_state('court')["name"]+` in Massachusetts. You're today's duty attorney, meaning you will be picking up new cases as they come in for arrainments and bail arguments. The clerk has given you a folder containing the following documents, a <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=complaint&g=`+complaint_data+`','_blank');">complaint</a>, <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=report&g=`+report_data+`','_blank');">incident report</a>, and <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=cori&g=`+cori_data+`','_blank');">CORI</a>. They also let you know that the prosecutor is looking to hold your client. Your client is downstairs in lockup. Take a moment to review their documents, then head downstairs to meet them.
+			</p>
+			<span id="visit_client_in_lockup">
+			<div class="options" style="display:show;box-sizing: border-box;max-width:300px;padding:0px 5px 0 5px;bottom:0px;margin: 15px auto;">
+			<p>
+				<input type="button" style="margin:0px 0 0 0px;width:100%;height:30px;background:rgb(187, 186, 186)" value='visit client in lockup' onclick="edit_state('task','visit_client_in_lockup');passcheck();" tabindex="4"/>
+			</p>
+			</div>
+			</span>`);
+		} else if (task=='other_task')  {
+			// other leading text
+		}
+		
 		$('#output_wrapper').css("bottom","60px");
 		$('#input_panel').hide();
 		$('#loading_box').hide();
@@ -293,6 +301,7 @@ function generategamestate() {
 		$('#action_box').hide();
 
 		localStorage.game_state = data;
+		edit_state('task',task)
 	  },
       error: function (jqXHR, exception) {
         alert("There was an error accessing the game state.");
@@ -441,6 +450,12 @@ function load_state(clear=0){
 		generategamestate();
 
 	} else if (get_state("task")=='first_client_meeting') {
+		console.log("Loading client interview");
+		$('#welcome').hide();
+		$('#pass_ask').hide();
+
+		$('#live').show();		
+	} else if (get_state("task")=='visit_client_in_lockup') {
 		console.log("Loading client interview");
 		$('#welcome').hide();
 		$('#pass_ask').hide();

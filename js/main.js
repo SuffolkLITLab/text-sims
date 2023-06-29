@@ -47,6 +47,14 @@ $(function(){
 	});
 });
 
+function save_sim() {
+    if (get_state('case_no')) {
+        saveTextAsFile(localStorage.game_state,get_state('case_no')+".txt");
+    } else {
+        alert("There's nothing to save yet. Try again once you've progressed some more.");
+    }
+}
+
 function saveTextAsFile(tosave,name) {
     // h/t http://runnable.com/U5HC9xtufQpsu5aj/use-javascript-to-save-textarea-as-a-txt-file 
 
