@@ -2,17 +2,17 @@
 <HTMl>
 <HEAD>
 
-	<TITLE></TITLE>
+	<TITLE>Suffolk Sims</TITLE>
 	<meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<link rel="apple-touch-icon" href="images/icon_300.png"/>
 
-	<meta property="og:site_name" content=""/>
+	<meta property="og:site_name" content="The LIT Lab"/>
 	<meta property="og:type" content="website"/>
-	<meta property="og:title" content=""/>
-	<meta property="og:description" content=""/>
+	<meta property="og:title" content="Suffolk Sims"/>
+	<meta property="og:description" content="\"You are standing in a courtroom...\" Develop your practice skills and test your mettle in these emersive text-based simulations from Suffolk University Law School's Legal Innovation & Technology Lab. Choose a simulation from the list below, or open a file above. Content Warning: These simulations explore the US criminal justice system. They are intended for a mature audiance and may include depictions of desturbing behavior—including drug use, sexual violence, and racism. User discretion is advised."/>
 	<meta property="og:image" content="images/thefuture.png"/>
 
 	<link rel="stylesheet" type="text/css" href="css/main.css?v=2023-05-10.13:09">
@@ -92,7 +92,7 @@
 	<div id="pass_ask">
 		<p>
 			To continue, you need to enter a valid <i>Suffolk Sims</i> passphrase. If you don't have a pass phrase, you can ask <a href="" target="_blank">@Colarusso</a> for one.</i>
-			<i>Pssst! You don't need to ask @Colarusso. We're beta testing and want folks to test drive, just enter "passphrase".</i>
+			<i>Pssst! You don't need to ask @Colarusso. We're in beta and want folks to test drive, just enter "passphrase".</i>
 		</p>
 		<div class="options" style="display:show;box-sizing: border-box;max-width:300px;padding:0px 5px 0 5px;bottom:0px;margin: 15px auto;">
 		<p>
@@ -146,7 +146,7 @@
 			<input type="button" style="margin:5px 0px 0 5px;width:60px;height:30px;background:rgb(187, 186, 186)" value='Do' onclick="show_do()" tabindex="7"/>
 		</td></tr></table>
 	</div>
-	<div id="action_box">
+	<div id="action_box" tabindex="-1">
 		<table cellpadding="0" cellspacing="0"><tr><td width="1%" valign="top">
 			<input id="show_say_button" type="button" style="margin:3px 0px 0 5px;width:60px;height:30px;background:rgb(187, 186, 186)" value='Say' onclick="show_say()" tabindex="8"/>
 		</td><td width="100%" valign="top">
@@ -186,7 +186,8 @@ control.addEventListener("change", function(event){
 		var reader = new FileReader();
 			reader.onload = function(event){
 				localStorage.game_state = event.target.result;
-				load_state();
+				passcheck();
+				//load_state();
 			};
 			reader.onerror = function(event){
 				console.error("File could not be read! Code " + event.target.error.code);
@@ -275,7 +276,7 @@ function generategamestate() {
 		cori_data["charges"] = get_state('charges');
 		cori_data = encodeURIComponent(JSON.stringify(cori_data));
 
-		console.log("Game State: "+data);
+		//console.log("Game State: "+data);
 
 		if (task=='first_client_meeting') {
 			$('#live').append(`<div style="text-align:right;width:100%;">Case No. `+get_state('case_no')+`</div>
@@ -294,14 +295,16 @@ function generategamestate() {
 			// other leading text
 		}
 		
+		localStorage.game_state = data;
+		edit_state('screen',$('#live').html());
+		edit_state('task',task)
+
 		$('#output_wrapper').css("bottom","60px");
 		$('#input_panel').hide();
 		$('#loading_box').hide();
 		$('#reply_box').hide();
 		$('#action_box').hide();
 
-		localStorage.game_state = data;
-		edit_state('task',task)
 	  },
       error: function (jqXHR, exception) {
         alert("There was an error accessing the game state.");
@@ -337,11 +340,9 @@ function bailinterview() {
 
 		contentType : "text/plain;charset=UTF-8",
 		success: function(data) {
-			console.log("API reply: "+data);
+			//console.log("API reply: "+data);
 
 			localStorage.game_state = data;
-
-    		//JSON.parse(localStorage.game_state)["bail_interview_transcript"][JSON.parse(localStorage.game_state)["bail_interview_transcript"].length - 1][0];
 
 			t = 25;
 			text = JSON.parse(localStorage.game_state)["bail_interview_transcript"][JSON.parse(localStorage.game_state)["bail_interview_transcript"].length - 1]
@@ -352,26 +353,20 @@ function bailinterview() {
 						$('#live').html($('#live').html()+`<p>`)	
 					}
 					$('#live').html($('#live').html()+text[i])
-					localStorage.game_state = data;
 					if (i==(text.length-1)) {
 						$('#live').html($('#live').html()+`</p>`)	
+						edit_state('screen',$('#live').html());
 						$('#input_panel').show();
 						$('#loading_box').hide();
 						$('#reply').val("");
 						$('#reply_box').show();
 						$('#action_box').hide();
 						$('#reply').focus();
-						localStorage.game_state = data;
 					}
 					$("#output_wrapper").scrollTop($("#output_wrapper")[0].scrollHeight);
 				}, t*i);
 			}
 
-			//$('#live').append(`<p>`+JSON.parse(localStorage.game_state)["bail_interview_transcript"][JSON.parse(localStorage.game_state)["bail_interview_transcript"].length - 1]+`</p>`);
-
-			//$("#output_wrapper").scrollTop($("#output_wrapper")[0].scrollHeight);
-		
-			//$('#output_wrapper').css("bottom","60px");
 		},
 		error: function (jqXHR, exception) {
 			alert("There was an error running your bail interview.");
@@ -386,26 +381,14 @@ function bailinterview() {
 //===========================================
 
 
-function reply(specs,reply){
-	$('#spinner').empty();
-	start_spinner('loaing_box');
-	hide('start_box');show('processing_box');hide('answer_box');
-	hide('video');show('hidden_video');$('#output_window').css('top','38px');
-	$('#markup').prop('disabled', true);
-	$('#markup').css('background','#eee');
-	$('#draft').prop('disabled', true);
-	$('#draft').css('background','#eee');
-	//console.log(specs,reply);
-	call_api(specs,reply);
-}
-
 function answer_button() {
 	if (document.getElementById('reply').value.trim()!="") {
 		answer = $('#reply').val().trim();
 		tmp = get_state("bail_interview_transcript")
 		tmp.push("ATTY: "+answer)
 		edit_state("bail_interview_transcript",tmp)
-		$('#live').append(`<p>YOU: `+answer+`</p>`)
+		$('#live').append(`<p>YOU: `+answer+`</p>`);
+		edit_state('screen',$('#live').html());
 		$('#input_panel').show();
 		$('#loading_box').show();
 		$('#reply_box').hide();
@@ -425,9 +408,12 @@ function load_state(clear=0){
 	if  (clear==1) {
 		console.log("Reseting game state");
 		localStorage.removeItem('game_state');
-	} 
+	} else {
+		console.log("Loading game state");
+		$('#live').html(get_state('screen'));
+	}
 	
-	if ((!get_state('client')) && (get_state('task'))) {
+	if (((!get_state('client')) && (get_state('task'))) | (get_state("task")=='first_client_meeting')) {
 
 		console.log("Loading case info");
 		$('#welcome').hide();
@@ -446,15 +432,10 @@ function load_state(clear=0){
 			NOTE: You'll miss a lot if you just play one round! You could play hundreds of rounds and not see everything. Each simulation generates a unique cases and clients combination to help explore different issues across rounds. That being said, if you're using this simulation as part of a training, your instructor may have specific senarios they want you to work through, in which case, they should have provided you with a file to upload using the Open link above.
 		</i>
 		</p>`);
+		edit_state('screen',$('#live').html());
 
 		generategamestate();
 
-	} else if (get_state("task")=='first_client_meeting') {
-		console.log("Loading client interview");
-		$('#welcome').hide();
-		$('#pass_ask').hide();
-
-		$('#live').show();		
 	} else if (get_state("task")=='visit_client_in_lockup') {
 		console.log("Loading client interview");
 		$('#welcome').hide();
@@ -468,8 +449,7 @@ function load_state(clear=0){
 		$('#reply_box').hide();
 		$('#action_box').hide();
 
-		if (JSON.parse(localStorage.game_state)["bail_interview_transcript"].length == 0) {
-
+		if (get_state('bail_interview_transcript').length == 0) {
 			$('#visit_client_in_lockup').remove();
 			$('#live').append(`<p>
 			<i>
@@ -477,10 +457,19 @@ function load_state(clear=0){
 			</i>
 			</p>
 			<p>You enter lockup ask to see your client. The gaurd ... You reach the door and your client.</p>`);
-
+			edit_state('screen',$('#live').html());
 		}
 
-		bailinterview();
+		if (get_state('bail_interview_transcript').length%2==0) {
+			bailinterview();
+		} else {
+			$('#input_panel').show();
+			$('#loading_box').hide();
+			$('#reply').val("");
+			$('#reply_box').show();
+			$('#action_box').hide();
+			$('#reply').focus();
+		}
 		
 	} else {
 		console.log("Loading home");
@@ -501,7 +490,6 @@ function load_state(clear=0){
 
 function load_page() {
 	start_spinner('loading_box');
-	$('#live').empty();
 	passcheck(login=-1);
 }
 window.onpaint = load_page();

@@ -49,6 +49,7 @@ $(function(){
 
 function save_sim() {
     if (get_state('case_no')) {
+        edit_state('passcode','')
         saveTextAsFile(localStorage.game_state,get_state('case_no')+".txt");
     } else {
         alert("There's nothing to save yet. Try again once you've progressed some more.");
@@ -147,6 +148,8 @@ function get_state(key) {
 
 function passcheck(login=0) {
 	var verified;
+
+    $('#live').empty();
 
     console.log("Checking verification")
     $('#output_wrapper').css("bottom","165px");
