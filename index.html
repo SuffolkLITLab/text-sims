@@ -22,16 +22,17 @@
 		if ((window.location.protocol == "https:") | (window.location.protocol == "http:")) {
 		  var server = "https://tools.suffolklitlab.org"; // Production Server
 		} else {
-		  var server = "http://127.0.0.1:10092"; // Local Testing Server
+		  var server = "http://127.0.0.1:10100"; // Local Testing Server
 		}
 	</script>
 	<script src="js/spin.min.js"></script>
-	<script src="js/main.js?v=2023-05-10.13:09"></script>
+	<script src="js/interactions.js?v=2023-05-10.13:09"></script>
+	<script src="js/api_calls.js?v=2023-05-10.13:09"></script>
+	<script src="js/load_state.js?v=2023-05-10.13:09"></script>
 	
 </HEAD>
 
 <BODY BGCOLOR="#ffffff" BACKGROUND="" MARGINWIDTH="0" MARGINHEIGHT="0">
-<FORM ID="RENDER_DOC" NAME="RENDER_DOC" ACTION="" METHOD="POST" accept-charset="UTF-8">
 <div id="menu_bar" style="position:absolute;top:10px;left:0px;right:0px;padding:0px 15px 5px 15px;overflow:hidden;">
   <span id="title_in_menu"><font class="header">Suffolk Sims</font> <sup><font color="gray" size=-2>BETA</font></sup></span>
   <div style="float:right">
@@ -44,23 +45,10 @@
   </div>
 </div>
 
-<!--- 
-###########################################
-  SAVE SHOULD REMOVE CREDENTIALS 
-
-  Objections: make objection cycle through a script that was generated before hand and only chop off the end if the objection is sustained. This will limit api calls.
-  Vo dire: 
-
-  Add link to feedback form
-###########################################
-###########################################
-###########################################
--->
-
 <div id="output_wrapper">
   <div id="output_window">
 
-    <!--- intro --->
+    <!--- home/welcome --->
 	<div id="welcome">
 		<span id="title_inline"><font class="header">Suffolk Sims</font> <sup><font color="gray" size=-2>BETA</font></sup></span>
 		<p>
@@ -88,7 +76,7 @@
 		</div>
 	</div>
 
-    <!--- key --->
+    <!--- verification --->
 	<div id="pass_ask">
 		<p>
 			To continue, you need to enter a valid <i>Suffolk Sims</i> passphrase. If you don't have a pass phrase, you can ask <a href="" target="_blank">@Colarusso</a> for one.</i>
@@ -104,17 +92,9 @@
 		</div>
 	</div>
 
-    <!--- new client --->
+    <!--- case interactions --->
 	<div id="live">
 
-		<!--- interview end --->
-		<p>You exit lockup.</p>
-		<p>
-		An important part of improving as a lawyer is taking time to reflect. So, how do you think that went? Did you get what you needed?
-		</p>
-		<p>
-		YOU: 
-		</p>
 		<p>
 		Okay. Remember, the [goals]. You may have missed [facts, if using ask about attempts to quit] What do you think you could have done differently?
 		</p>
@@ -136,23 +116,29 @@
 
 </div>
 
+<!--- user input --->
 <div id="input_panel">
 	<div id="loading_box">&nbsp;</div>
+	<!--- text input --->
 	<div id="reply_box">
 		<table cellpadding="0" cellspacing="0"><tr><td width="100%">
 			<textarea id="reply" name="reply" style="box-sizing: border-box;width:100%;height:80px;margin:0px;resize: none;" tabindex="5"></textarea>
 		</td><td width="1%" valign="top">
-			<input type="button" style="margin:0px 0px 0 5px;width:60px;height:30px;background:rgb(187, 186, 186)" value='Say' onclick="answer_button()" tabindex="6"/>
-			<input type="button" style="margin:5px 0px 0 5px;width:60px;height:30px;background:rgb(187, 186, 186)" value='Do' onclick="show_do()" tabindex="7"/>
+			<input id="say_button" type="button" style="margin:0px 0px 0 5px;width:60px;height:30px;background:rgb(187, 186, 186)" value='Say' onclick="answer_button()" tabindex="6"/>
+			<input id="do_botton" type="button" style="margin:5px 0px 0 5px;width:60px;height:30px;background:rgb(187, 186, 186)" value='Do' onclick="show_do()" tabindex="7"/>
 		</td></tr></table>
 	</div>
+	<!--- action inputs --->
 	<div id="action_box" tabindex="-1">
 		<table cellpadding="0" cellspacing="0"><tr><td width="1%" valign="top">
 			<input id="show_say_button" type="button" style="margin:3px 0px 0 5px;width:60px;height:30px;background:rgb(187, 186, 186)" value='Say' onclick="show_say()" tabindex="8"/>
 		</td><td width="100%" valign="top">
 			<div id="action_list">
-				<input type="button" style="margin:3px 0px 0 5px;width:100%;height:30px;background:rgb(187, 186, 186)" value='exit room' onclick="" tabindex="8"/>
+				
+				<input id="exit_room" type="button" style="margin:3px 0px 0 5px;width:100%;height:30px;background:rgb(187, 186, 186)" value='exit room' onclick="answer_button('[[end]]')" tabindex="8"/>
+				
 				<input type="button" style="margin:3px 0px 0 5px;width:100%;height:30px;background:rgb(187, 186, 186)" value='hand client HIPAA release' onclick="" tabindex="10" disabled/>
+
 			</div>
 		</td></tr></table>
 	</div>
@@ -168,15 +154,12 @@
 	<a id="feedback" href="https://forms.gle/zJeZRRNr1vKShM4S7" target="_blank">feedback</a>
 </div>
 
-</FORM>
 </BODY>
 
 <script type="text/javascript">
 
-
-
 //===========================================
-// START: data handling
+// Data handling
 //===========================================
 // h/t http://answers.splunk.com/answers/125819/fill-textarea-from-a-file.html
 
@@ -186,6 +169,11 @@ control.addEventListener("change", function(event){
 		var reader = new FileReader();
 			reader.onload = function(event){
 				localStorage.game_state = event.target.result;
+
+				if (get_state('version')!="0.1") {
+            		alert("This file does not seem to be a valid v0.1 simulation file (our latest version). It may break things/not load properly. Proceed at your own risk!");
+        		}
+
 				passcheck();
 				//load_state();
 			};
@@ -200,7 +188,7 @@ control.addEventListener("change", function(event){
 }, false);
 
 //===========================================
-// START: Custom keypress events
+// Custom keypress events
 //===========================================
 
 $('#forget_pass_phrase').keypress(function(e){
@@ -231,266 +219,9 @@ $('#reply').keypress(function(e){
 	}
 });
 
-//===========================================
-// START: API Calls
-//===========================================
-
-function generategamestate() {
-	var verified;
-
-	task = get_state('task');
-
-	if (localStorage.passphrase) {
-		$('#suffolk_pass_phrase').val(localStorage.passphrase);
-	} else if (sessionStorage.passphrase) {
-		$('#suffolk_pass_phrase').val(sessionStorage.passphrase);
-	}
-	passphrase = $('#suffolk_pass_phrase').val();
-    var Data = { "p": passphrase }
-
-    $.ajax({
-      type: "GET",
-      url: server + "/generate_game_state/",
-      data: Data,
-
-      //dataType: "json",
-      // --- OR ---
-      dataType: "jsonp",
-      jsonpCallback: 'callback',
-
-      contentType : "text/javascript",
-      success: function(data) {
-		localStorage.game_state = data;
-
-		complaint_data = {}
-		complaint_data["client"] = get_state('client');
-		complaint_data["court"] = get_state('court');
-		complaint_data["charges"] = get_state('charges');
-		report_data = complaint_data
-		cori_data = complaint_data
-		complaint_data = encodeURIComponent(JSON.stringify(complaint_data));
-
-		report_data["charges"] = get_state('charges');
-		report_data = encodeURIComponent(JSON.stringify(report_data));
-
-		cori_data["charges"] = get_state('charges');
-		cori_data = encodeURIComponent(JSON.stringify(cori_data));
-
-		//console.log("Game State: "+data);
-
-		if (task=='first_client_meeting') {
-			$('#live').append(`<div style="text-align:right;width:100%;">Case No. `+get_state('case_no')+`</div>
-			<h3>Arrignment +0 Days</h3>
-			<p>
-			It's Monday morning and you're in the `+get_state('court')["name"]+` in Massachusetts. You're today's duty attorney, meaning you will be picking up new cases as they come in for arrainments and bail arguments. The clerk has given you a folder containing the following documents, a <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=complaint&g=`+complaint_data+`','_blank');">complaint</a>, <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=report&g=`+report_data+`','_blank');">incident report</a>, and <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=cori&g=`+cori_data+`','_blank');">CORI</a>. They also let you know that the prosecutor is looking to hold your client. Your client is downstairs in lockup. Take a moment to review their documents, then head downstairs to meet them.
-			</p>
-			<span id="visit_client_in_lockup">
-			<div class="options" style="display:show;box-sizing: border-box;max-width:300px;padding:0px 5px 0 5px;bottom:0px;margin: 15px auto;">
-			<p>
-				<input type="button" style="margin:0px 0 0 0px;width:100%;height:30px;background:rgb(187, 186, 186)" value='visit client in lockup' onclick="edit_state('task','visit_client_in_lockup');passcheck();" tabindex="4"/>
-			</p>
-			</div>
-			</span>`);
-		} else if (task=='other_task')  {
-			// other leading text
-		}
-		
-		localStorage.game_state = data;
-		edit_state('screen',$('#live').html());
-		edit_state('task',task)
-
-		$('#output_wrapper').css("bottom","60px");
-		$('#input_panel').hide();
-		$('#loading_box').hide();
-		$('#reply_box').hide();
-		$('#action_box').hide();
-
-	  },
-      error: function (jqXHR, exception) {
-        alert("There was an error accessing the game state.");
-      }
-    });
-}
-
-function bailinterview() {
-
-	game_state = localStorage.game_state;
-
-	if (localStorage.passphrase) {
-		$('#suffolk_pass_phrase').val(localStorage.passphrase);
-	} else if (sessionStorage.passphrase) {
-		$('#suffolk_pass_phrase').val(sessionStorage.passphrase);
-	}
-	passphrase = $('#suffolk_pass_phrase').val();
-	game_state = localStorage.game_state;
-
-	var Data = { "game_state": game_state }	
-
-	$.ajax({
-		type: "POST",
-		url: server + "/bail_interview/",
-		data: JSON.stringify(Data),
-		//data: Data,
-
-		dataType: "json",
-		crossDomain:true,
-		// --- OR ---
-		//dataType: "jsonp",
-		//jsonpCallback: 'callback',
-
-		contentType : "text/plain;charset=UTF-8",
-		success: function(data) {
-			//console.log("API reply: "+data);
-
-			localStorage.game_state = data;
-
-			t = 25;
-			text = JSON.parse(localStorage.game_state)["bail_interview_transcript"][JSON.parse(localStorage.game_state)["bail_interview_transcript"].length - 1]
-			for(let i = 0; i < text.length; i++){
-				setTimeout(function(){
-					if (i==0){
-						//$('#live').html($('#live').html()+`<p>`+ JSON.parse(localStorage.game_state)["clinet"]["vitals"]["first_name"].toUpperCase()+`: `)	
-						$('#live').html($('#live').html()+`<p>`)	
-					}
-					$('#live').html($('#live').html()+text[i])
-					if (i==(text.length-1)) {
-						$('#live').html($('#live').html()+`</p>`)	
-						edit_state('screen',$('#live').html());
-						$('#input_panel').show();
-						$('#loading_box').hide();
-						$('#reply').val("");
-						$('#reply_box').show();
-						$('#action_box').hide();
-						$('#reply').focus();
-					}
-					$("#output_wrapper").scrollTop($("#output_wrapper")[0].scrollHeight);
-				}, t*i);
-			}
-
-		},
-		error: function (jqXHR, exception) {
-			alert("There was an error running your bail interview.");
-		}
-	});
-
-
-}
-
-//===========================================
-// START: BUTTONS
-//===========================================
-
-
-function answer_button() {
-	if (document.getElementById('reply').value.trim()!="") {
-		answer = $('#reply').val().trim();
-		tmp = get_state("bail_interview_transcript")
-		tmp.push("ATTY: "+answer)
-		edit_state("bail_interview_transcript",tmp)
-		$('#live').append(`<p>YOU: `+answer+`</p>`);
-		edit_state('screen',$('#live').html());
-		$('#input_panel').show();
-		$('#loading_box').show();
-		$('#reply_box').hide();
-		$('#action_box').hide();
-		bailinterview(answer);
-	} else {
-		alert("Your answer is blank. Please add text.")
-	}
-}
-
-//===========================================
-// START: LOGIC FLOW
-//===========================================
-
-function load_state(clear=0){
-
-	if  (clear==1) {
-		console.log("Reseting game state");
-		localStorage.removeItem('game_state');
-	} else {
-		console.log("Loading game state");
-		$('#live').html(get_state('screen'));
-	}
-	
-	if (((!get_state('client')) && (get_state('task'))) | (get_state("task")=='first_client_meeting')) {
-
-		console.log("Loading case info");
-		$('#welcome').hide();
-		$('#pass_ask').hide();
-
-		$('#live').show();
-		
-		$('#output_wrapper').css("bottom","165px");
-		$('#input_panel').show();
-		$('#loading_box').show();
-		$('#reply_box').hide();
-		$('#action_box').hide();
-
-		$('#live').append(`<p>
-		<i>
-			NOTE: You'll miss a lot if you just play one round! You could play hundreds of rounds and not see everything. Each simulation generates a unique cases and clients combination to help explore different issues across rounds. That being said, if you're using this simulation as part of a training, your instructor may have specific senarios they want you to work through, in which case, they should have provided you with a file to upload using the Open link above.
-		</i>
-		</p>`);
-		edit_state('screen',$('#live').html());
-
-		generategamestate();
-
-	} else if (get_state("task")=='visit_client_in_lockup') {
-		console.log("Loading client interview");
-		$('#welcome').hide();
-		$('#pass_ask').hide();
-
-		$('#live').show();
-		
-		$('#output_wrapper').css("bottom","165px");
-		$('#input_panel').show();
-		$('#loading_box').show();
-		$('#reply_box').hide();
-		$('#action_box').hide();
-
-		if (get_state('bail_interview_transcript').length == 0) {
-			$('#visit_client_in_lockup').remove();
-			$('#live').append(`<p>
-			<i>
-				NOTE: To speak with your client type your words below and hit Enter or Say. To hand them something or leave the room, hit Do and choose your desired action. Your goals are to: (1) get what you need to make a bail argument; (2) avoid talking about the facts of the case; and (3) to build a rapport with your client. You may want to review the duty day materials over on the <a href="https://suffolklitlab.org/incourt/" target="_blank">In Court app</a>.
-			</i>
-			</p>
-			<p>You enter lockup ask to see your client. The gaurd ... You reach the door and your client.</p>`);
-			edit_state('screen',$('#live').html());
-		}
-
-		if (get_state('bail_interview_transcript').length%2==0) {
-			bailinterview();
-		} else {
-			$('#input_panel').show();
-			$('#loading_box').hide();
-			$('#reply').val("");
-			$('#reply_box').show();
-			$('#action_box').hide();
-			$('#reply').focus();
-		}
-		
-	} else {
-		console.log("Loading home");
-		$('#welcome').show();
-		$('#pass_ask').hide();
-		
-		$('#live').hide();
-		$('#live').empty();
-
-		$('#output_wrapper').css("bottom","60px");
-		$('#input_panel').hide();
-		$('#loading_box').hide();
-		$('#reply_box').hide();
-		$('#action_box').hide();
-	}
-		
-}
-
 function load_page() {
 	start_spinner('loading_box');
-	passcheck(login=-1);
+	passcheck();
 }
 window.onpaint = load_page();
 
@@ -505,6 +236,5 @@ window.onpaint = load_page();
 
 	gtag('config', 'G-41WF20BW7V');
 </script>
-
 
 </HTML>

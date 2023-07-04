@@ -87,6 +87,32 @@ body {
 	display: none;
 }
 
+a.anchor {
+	display:block;
+	float:right;
+	width:22px;
+	height:16px;
+	margin-bottom: 5px;
+	background-image: url("../images/link.png");
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.more {
+	float:right;
+	font-family: Arial, Helvetica, sans-serif;
+	text-align: center;
+	width:20px;
+	height:20px;
+	font-size: 15px;
+	line-height: 18px;
+	border-radius: 50%;
+	border: 1px solid #616161;
+	text-decoration: none;
+	color:#ffffff;
+	background:#578391;
+}
+
 .option_button {
 	margin:5px 0 0 0px;
 	width:100%;
@@ -109,7 +135,7 @@ body {
 #loading_box {
 	box-sizing:border-box;
 	width:55px;
-	height:70px;]
+	height:70px;
 	padding:0px;
 	bottom:0px;
 	text-align:center;

@@ -1,6 +1,6 @@
-//===========================================
-// START: Spinner 
-//===========================================
+//==============================================================
+// Interactions (spinner, beep, keyboard typing...) 
+//==============================================================
 
 function start_spinner(target_id) {
     var opts = {
@@ -23,10 +23,44 @@ function start_spinner(target_id) {
     var target = document.getElementById(target_id);
     var spinner = new Spinner(opts).spin(target);
   }
-  
-//===========================================
-// START: Sounds
-//===========================================
+ 
+  function typewrite(text,t=25,on_close_end=0,on_close_write="") {
+	for(let i = 0; i < text.length; i++){
+		setTimeout(function(){
+			if (i==0){
+				$('#live').html($('#live').html()+`<p>`)	
+			}
+			$('#live').html($('#live').html()+text[i])
+			if (i==(text.length-1)) {
+				$('#live').html($('#live').html()+`</p>`)	
+				edit_state('screen',$('#live').html());
+				if (on_close_end!=1) {
+					$('#input_panel').show();
+					$('#loading_box').hide();
+					$('#reply').val("");
+					$('#reply_box').show();
+					$('#action_box').hide();
+					$('#reply').focus();
+				} else {
+
+					if (on_close_write!="")	{
+						$('#live').html($('#live').html()+on_close_write)	
+						edit_state('screen',$('#live').html());
+						$("#output_wrapper").scrollTop($("#output_wrapper")[0].scrollHeight);		
+					}
+
+					$('#input_panel').hide();
+					$('#loading_box').hide();
+					$('#reply').val("");
+					$('#reply_box').hide();
+					$('#action_box').hide();
+					$('#output_wrapper').css("bottom","60px");
+				}
+			}
+			$("#output_wrapper").scrollTop($("#output_wrapper")[0].scrollHeight);
+		}, t*i);
+	}
+}
 
 function beep() {
 	var snd = new Audio("data:audio/wav;base64,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qJrx4KOQjahZxWbcZgztj2c49nKmkId44S71j0c8eV9yDK6uPRzx5X18eDvjvQ6yKo9ZSS6l//8elePK/Lf//IInrOF/FvDoADYAGBMGb7FtErm5MXMlmPAJQVgWta7Zx2go+8xJ0UiCb8LHHdftWyLJE0QIAIsI+UbXu67dZMjmgDGCGl1H+vpF4NSDckSIkk7Vd+sxEhBQMRU8j/12UIRhzSaUdQ+rQU5kGeFxm+hb1oh6pWWmv3uvmReDl0UnvtapVaIzo1jZbf/pD6ElLqSX+rUmOQNpJFa/r+sa4e/pBlAABoAAAAA3CUgShLdGIxsY7AUABPRrgCABdDuQ5GC7DqPQCgbbJUAoRSUj+NIEig0YfyWUho1VBBBA//uQZB4ABZx5zfMakeAAAAmwAAAAF5F3P0w9GtAAACfAAAAAwLhMDmAYWMgVEG1U0FIGCBgXBXAtfMH10000EEEEEECUBYln03TTTdNBDZopopYvrTTdNa325mImNg3TTPV9q3pmY0xoO6bv3r00y+IDGid/9aaaZTGMuj9mpu9Mpio1dXrr5HERTZSmqU36A3CumzN/9Robv/Xx4v9ijkSRSNLQhAWumap82WRSBUqXStV/YcS+XVLnSS+WLDroqArFkMEsAS+eWmrUzrO0oEmE40RlMZ5+ODIkAyKAGUwZ3mVKmcamcJnMW26MRPgUw6j+LkhyHGVGYjSUUKNpuJUQoOIAyDvEyG8S5yfK6dhZc0Tx1KI/gviKL6qvvFs1+bWtaz58uUNnryq6kt5RzOCkPWlVqVX2a/EEBUdU1KrXLf40GoiiFXK///qpoiDXrOgqDR38JB0bw7SoL+ZB9o1RCkQjQ2CBYZKd/+VJxZRRZlqSkKiws0WFxUyCwsKiMy7hUVFhIaCrNQsKkTIsLivwKKigsj8XYlwt/WKi2N4d//uQRCSAAjURNIHpMZBGYiaQPSYyAAABLAAAAAAAACWAAAAApUF/Mg+0aohSIRobBAsMlO//Kk4soosy1JSFRYWaLC4qZBYWFRGZdwqKiwkNBVmoWFSJkWFxX4FFRQWR+LsS4W/rFRb/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////VEFHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU291bmRib3kuZGUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjAwNGh0dHA6Ly93d3cuc291bmRib3kuZGUAAAAAAAAAACU=");  
@@ -36,16 +70,9 @@ function beep() {
 }
 
 //===========================================
-// START: data handling
+// Data handling
 //===========================================
 // h/t http://answers.splunk.com/answers/125819/fill-textarea-from-a-file.html
-
-$(function(){
-	$("#upload_link").on('click', function(e){
-		e.preventDefault();
-		$("#upload:hidden").trigger('click');
-	});
-});
 
 function save_sim() {
     if (get_state('case_no')) {
@@ -55,6 +82,13 @@ function save_sim() {
         alert("There's nothing to save yet. Try again once you've progressed some more.");
     }
 }
+
+$(function(){
+	$("#upload_link").on('click', function(e){
+		e.preventDefault();
+		$("#upload:hidden").trigger('click');
+	});
+});
 
 function saveTextAsFile(tosave,name) {
     // h/t http://runnable.com/U5HC9xtufQpsu5aj/use-javascript-to-save-textarea-as-a-txt-file 
@@ -137,94 +171,12 @@ function get_state(key) {
         }
     }
 	catch(err) {
-		localStorage.game_state = "{}";
+		//localStorage.game_state = "{}";
 	}    
 }
 
-
 //===========================================
-// START: API Calls
-//===========================================
-
-function passcheck(login=0) {
-	var verified;
-
-    $('#live').empty();
-
-    console.log("Checking verification")
-    $('#output_wrapper').css("bottom","165px");
-    $('#input_panel').show();
-    $('#loading_box').show();
-    $('#reply_box').hide();
-    $('#action_box').hide();
-
-	if (localStorage.passphrase) {
-		$('#suffolk_pass_phrase').val(localStorage.passphrase);
-	} else if (sessionStorage.passphrase) {
-		$('#suffolk_pass_phrase').val(sessionStorage.passphrase);
-	}
-	passphrase = $('#suffolk_pass_phrase').val();
-    var Data = { "p": passphrase }
-
-    $.ajax({
-      type: "GET",
-      url: server + "/pass_check/",
-      data: Data,
-
-      //dataType: "json",
-      // --- OR ---
-      dataType: "jsonp",
-      jsonpCallback: 'callback',
-
-      contentType : "text/javascript",
-      success: function(data) {
-        verified = data["passed"];
-		console.log("Verified: "+verified)
-		console.log("Login: "+login)
-		if (verified) {
-			$('#logout_span').show();
-			if (login!=-1) {
-				$('#welcome').hide();
-				$('#pass_ask').hide();
-				if (login==1) {
-					if ($("input[name='save_pass']:checked").val()=="1"){
-						console.log("Saving passphrase in Local Storage.");
-						localStorage.passphrase = $('#suffolk_pass_phrase').val();
-						sessionStorage.removeItem("passphrase");
-					} else {
-						console.log("Saving passphrase in Session Storage.");
-						sessionStorage.passphrase = $('#suffolk_pass_phrase').val();
-						localStorage.removeItem("passphrase");
-					}
-				}
-                load_state();
-			}
-		} else {
-			if (login==1){
-				$('#suffolk_pass_phrase').val("");
-				$("#suffolk_pass_phrase").css("background-color", "yellow");
-			}
-			if (login!=-1) {
-				$('#welcome').hide();
-				$('#pass_ask').show();
-				$('#suffolk_pass_phrase').focus();
-			}
-		}
-	  },
-      error: function (jqXHR, exception) {
-        alert("There was an error verifying your access.");
-      }
-    });
-
-    $('#output_wrapper').css("bottom","60px");
-    $('#input_panel').hide();
-    $('#loading_box').hide();
-    $('#reply_box').hide();
-    $('#action_box').hide();    
-}
-
-//===========================================
-// START: BUTTONS
+// Buttons
 //===========================================
 
 function logout() {
@@ -248,6 +200,65 @@ function show_say() {
 	$('#reply_box').show();
 	$('#action_box').hide();
 	$('#reply').focus();
+}
+
+function answer_button(action=null) {
+
+	if (action) {
+
+		if (action=="[[end]]") {
+			$('#input_panel').show();
+			$('#loading_box').show();
+			$('#reply_box').hide();
+			$('#action_box').hide();
+			defrief_text = "CO-COUNSEL: How do you think that went? Did you get what you needed?";
+			tmp = get_state("bail_interview_debrief_transcript")
+			tmp.push(defrief_text)
+			edit_state("bail_interview_debrief_transcript",tmp)
+			$('#live').append(`<p>You exit the room. Now for a debrief with your "co-counsel" from the training unit.</p><p>`);
+			$("#output_wrapper").scrollTop($("#output_wrapper")[0].scrollHeight);
+			typewrite(defrief_text,t=25,on_close_end=0);
+			$('#live').append(`</p>`);
+			$("#output_wrapper").scrollTop($("#output_wrapper")[0].scrollHeight);
+			edit_state('screen',$('#live').html());
+			$('#do_botton').hide();
+		}
+
+	} else {
+		answer = $('#reply').val().trim();
+		if (answer!="") {
+		
+			if (get_state('task')=='visit_client_in_lockup') {
+
+				if (get_state('bail_interview_debrief_transcript').length==0) {
+					console.log("Writing to bail interview")
+					tmp = get_state("bail_interview_transcript")
+					tmp.push("ATTY: "+answer);
+					edit_state("bail_interview_transcript",tmp);
+				} else {
+					console.log("Writing to bail interview debrief")
+					tmp = get_state("bail_interview_debrief_transcript")
+					tmp.push("ATTY: "+answer)
+					edit_state("bail_interview_debrief_transcript",tmp)
+				}
+
+				$('#live').append(`<p>YOU: `+answer+`</p>`);
+				$("#output_wrapper").scrollTop($("#output_wrapper")[0].scrollHeight);
+				edit_state('screen',$('#live').html());
+				$('#input_panel').show();
+				$('#loading_box').show();
+				$('#reply_box').hide();
+				$('#action_box').hide();
+				bailinterview(answer);
+
+			}
+
+		} else {
+			alert("Your answer is blank. Please add text.")
+		}
+
+	}
+
 }
 
 // EOF
