@@ -42,7 +42,7 @@ function load_state(clear=0){
 
             $('#live').append(`<p>
             <i>
-                NOTE: You'll miss a lot if you only play one round. You could play hundreds of rounds and not see everything! Each simulation generates a unique cases and clients combination to help explore different issues across. That being said, if you're using this simulation as part of a training, your instructor may have specific senarios they want you to work through, in which case, they should have provided you with a file to upload using the Open link above.
+                NOTE: You'll miss a lot if you only play one round. You could play hundreds of rounds and not see everything! Each simulation generates a unique combination of people and events to explore different issues. That being said, if you're using this simulation as part of a training, your instructor may have specific senarios they want you to work through, in which case, they should have provided you with a file to upload using the "Open" link above.
             </i>
             </p>`);
             edit_state('screen',$('#live').html());
@@ -99,10 +99,10 @@ function load_state(clear=0){
                     $('#visit_client_in_lockup').remove();
                     $('#live').append(`<p>
                     <i>
-                        NOTE: To speak with your client type your words below and hit Enter or Say. To hand them something or leave the room, hit Do and choose your desired action. Your goals are to: (1) get what you need to make a bail argument; (2) avoid talking about the facts of the case; and (3) to build a rapport with your client. You may want to review the duty day materials over on the <a href="https://suffolklitlab.org/incourt/" target="_blank">In Court app</a>.
+                        NOTE: To speak with your client, type what you want to say below and hit Enter or tap the "Say" button. To hand them something or leave the room, tap "Do" and choose your desired action. Your goals are to: (1) orient your client as to what they should expect today; (2) get what you need to make a bail argument; (3) avoid talking about the facts of the case (lockup is not private); and (4) build a rapport. You may want to review the duty day materials over on the <a href="https://suffolklitlab.org/incourt/" target="_blank">In Court app</a> or take a look at what <a href="manual/#meet" target="_blank">the manual</a> has to say.
                     </i>
                     </p>
-                    <p>You enter lockup ask to see your client. The gaurd ... You reach the door and your client.</p>`);
+                    <p>You enter lockup and ask to speak with your client. The gaurd directs you to holding cell shared by a couple of individuals and calls your client's name. You client steps forward and speaks to you through the window.</p>`);
                     edit_state('screen',$('#live').html());
                 }
 

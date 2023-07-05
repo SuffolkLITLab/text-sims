@@ -114,24 +114,26 @@ function generategamestate() {
 		complaint_data = {}
 		complaint_data["client"] = get_state('client');
 		complaint_data["court"] = get_state('court');
-		complaint_data["charges"] = get_state('charges');
+		complaint_data["complaint"] = get_state('complaint');
+		complaint_data["complaintant"] = get_state('complaintant');
+		
 		report_data = complaint_data
 		cori_data = complaint_data
 		complaint_data = encodeURIComponent(JSON.stringify(complaint_data));
 
-		report_data["charges"] = get_state('charges');
+		report_data["complaint"] = get_state('complaint');
 		report_data = encodeURIComponent(JSON.stringify(report_data));
 
-		cori_data["charges"] = get_state('charges');
+		cori_data["complaint"] = get_state('complaint');
 		cori_data = encodeURIComponent(JSON.stringify(cori_data));
 
 		//console.log("Game State: "+data);
 
 		if (task=='first_client_meeting') {
-			$('#live').append(`<div style="text-align:right;width:100%;">Case No. `+get_state('case_no')+`</div>
-			<h3>Arraignment +0 Days <a href="manual/#arraignment" class="more">?</a></h3>
+			$('#live').append(`<div style="text-align:right;width:100%;">Case No. <span>`+get_state('case_no')+`</span></div>
+			<h3>Arraignment +0 Days <a href="manual/#meet" class="more">?</a></h3>
 			<p>
-			It's Monday morning and you're in the `+get_state('court')["name"]+` in Massachusetts. You're today's duty attorney, meaning you will be picking up new cases as they come in for arrainments and bail arguments. The clerk has given you a folder containing the following documents, a <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=complaint&g=`+complaint_data+`','_blank');">complaint</a>, <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=report&g=`+report_data+`','_blank');">incident report</a>, and <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=cori&g=`+cori_data+`','_blank');">CORI</a>. They also let you know that the prosecutor is looking to hold your client. Your client is downstairs in lockup. Take a moment to review their documents, then head downstairs to meet them.
+			It's Monday morning and you're in the `+get_state('court')["name"]+`, located in Massachusetts. You are today's duty attorney, meaning you will be picking up new cases as they come in for arrainments and bail arguments. The clerk has given you a folder containing the following documents, a <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=complaint&g=`+complaint_data+`','_blank');">complaint</a>, <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=report&g=`+report_data+`','_blank');">incident report</a>, and <a href="javascript:void('')" onClick="window.open(server+'/render_doc/?k=cori&g=`+cori_data+`','_blank');">CORI</a>. They also let you know that the prosecutor is looking to hold your client. Your client is downstairs in lockup. Take a moment to review their documents, then head downstairs to meet them.
 			</p>
 			<span id="visit_client_in_lockup">
 			<div class="options" style="display:show;box-sizing: border-box;max-width:300px;padding:0px 5px 0 5px;bottom:0px;margin: 15px auto;">
@@ -206,7 +208,7 @@ function bailinterview() {
 			} else {
 				text = JSON.parse(localStorage.game_state)["bail_interview_debrief_transcript"][JSON.parse(localStorage.game_state)["bail_interview_debrief_transcript"].length - 1];
 				typewrite(text,t=25,on_close_end=1,on_close_write=`<p><i>
-				NOTE: If you want to revisit this case in the future, you should save it to a file using the link above. To run a new simulation, hit New above or load a senario using the Open link.
+				NOTE: If you want to revisit this case in the future, you should save it to a file using the link above. To run another simulation, hit "New" above or load a senario using the "Open" link.
 			</i></p><p>We'd love your feedback, consider completing this <a href="https://forms.gle/zJeZRRNr1vKShM4S7" target="_blank">three question survey</a>.</p>`)
 			}
 

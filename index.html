@@ -22,7 +22,7 @@
 		if ((window.location.protocol == "https:") | (window.location.protocol == "http:")) {
 		  var server = "https://tools.suffolklitlab.org"; // Production Server
 		} else {
-		  var server = "http://127.0.0.1:10100"; // Local Testing Server
+		  var server = "http://127.0.0.1:10012"; // Local Testing Server
 		}
 	</script>
 	<script src="js/spin.min.js"></script>
@@ -52,7 +52,7 @@
 	<div id="welcome">
 		<span id="title_inline"><font class="header">Suffolk Sims</font> <sup><font color="gray" size=-2>BETA</font></sup></span>
 		<p>
-		"You are standing in a courtroom..." Develop your practice skills and test your mettle in these emersive text-based simulations from Suffolk University Law School's <a href="https://suffolklitlab.org/" target="_blank">Legal Innovation &amp; Technology Lab</a>. Choose a simulation from the list below, or open a file above. <span style="background:rgb(255, 255, 126);"><i><b>Content Warning:</b> These simulations explore the US criminal justice system. They are intended for a mature audiance and may include depictions of desturbing behavior&mdash;including drug use, sexual violence, and racism. User discretion is advised.</i></span>  
+		"You are standing in a courtroom..." Develop your practice skills and test your mettle in these emersive text-based simulations from Suffolk University Law School's <a href="https://suffolklitlab.org/" target="_blank">Legal Innovation &amp; Technology Lab</a>. Choose a simulation from the list below, or open a file above.  <a href="manual/">Learn more</a>. <span style="background:rgb(255, 255, 126);"><i><b>Content Warning:</b> These simulations explore the US criminal justice system. They are intended for a mature audiance and may include depictions of desturbing behavior&mdash;including drug use, sexual violence, and racism. User discretion is advised.</i></span>  
 		<p>
 		<div class="options" style="display:show;box-sizing: border-box;max-width:300px;padding:0px 5px 0 5px;bottom:0px;margin: 15px auto;">
 		<p>
@@ -66,6 +66,7 @@
 			<input type="button" class="option_button" value='objections' onclick="alert('coming soon')" disabled/>
 			<input type="button" class="option_button" value='cross exam' onclick="alert('coming soon')" disabled/>
 			<input type="button" class="option_button" value='witness interview/prep' onclick="alert('coming soon')" disabled/>
+			<input type="button" class="option_button" value='introduce evidence' onclick="alert('coming soon')" disabled/>
 			<input type="button" class="option_button" value='direct exam' onclick="alert('coming soon')" disabled/>
 			<input type="button" class="option_button" value='motion to supress' onclick="alert('coming soon')" disabled/>
 			<input type="button" class="option_button" value='motions in limine' onclick="alert('coming soon')" disabled/>
@@ -79,7 +80,7 @@
     <!--- verification --->
 	<div id="pass_ask">
 		<p>
-			To continue, you need to enter a valid <i>Suffolk Sims</i> passphrase. If you don't have a pass phrase, you can ask <a href="" target="_blank">@Colarusso</a> for one.</i>
+			To continue, you need to enter a valid <i>Suffolk Sims</i> passphrase. If you don't have a passphrase, you can ask <a href="" target="_blank">@Colarusso</a> for one.</i>
 			<i>Pssst! You don't need to ask @Colarusso. We're in beta and want folks to test drive, just enter "passphrase".</i>
 		</p>
 		<div class="options" style="display:show;box-sizing: border-box;max-width:300px;padding:0px 5px 0 5px;bottom:0px;margin: 15px auto;">
@@ -93,24 +94,7 @@
 	</div>
 
     <!--- case interactions --->
-	<div id="live">
-
-		<p>
-		Okay. Remember, the [goals]. You may have missed [facts, if using ask about attempts to quit] What do you think you could have done differently?
-		</p>
-		<p>
-		YOU: 
-		</p>
-		<p>
-		Okay. FWIW, here's what your client had to say when asked how they thought the interview went. 
-		</p>
-		<p>
-		<i>
-			NOTE: If you want to revisit this case in the future, you should save it to a file using the link above. You could also consider <a href="javascript:void('')" onClick="">printing</a> the above. To run a new simulation, hit New above or load a senario using the Open link.
-		</i>
-		</p>
-		<p>We'd love your feedback, consider completing this <a href="https://forms.gle/zJeZRRNr1vKShM4S7" target="_blank">three question survey</a>.</p>
-	</div>
+	<div id="live"></div>
     
   </div>
 
